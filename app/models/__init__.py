@@ -3,3 +3,4 @@
 # otherwise create_all() won't know which tables to create.
 from app.models.user import OTPSession, User  # noqa: F401
 from app.models.preference import UserPreference  # noqa: F401
+from app.models.menu import MenuItem  # noqa: F401

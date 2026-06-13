@@ -41,6 +41,7 @@ async def init_qdrant() -> None:
         port=settings.QDRANT_PORT,
         https=settings.QDRANT_HTTPS,          # explicit — never left to inference
         api_key=settings.QDRANT_API_KEY or None,
+        check_compatibility=False,            # suppresses client/server version mismatch warning
     )
 
     response = await _client.get_collections()
