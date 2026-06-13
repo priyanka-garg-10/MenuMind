@@ -1,0 +1,49 @@
+# MySQL is running locally on the host machine — no container needed.
+# When the API container needs to reach host MySQL, it uses host.docker.internal
+# (automatically available on Windows/Mac Docker Desktop).
+
+services:
+
+  qdrant:
+    image: qdrant/qdrant:v1.10.0
+    container_name: restaurant_qdrant
+    ports:
+      - "6333:6333"   # REST API
+      - "6334:6334"   # gRPC
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - restaurant_net
+    healthcheck:
+      # Qdrant image has no curl — use bash TCP probe instead
+      test: ["CMD-SHELL", "bash -c ':>/dev/tcp/localhost/6333'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: restaurant_api
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/app        # Hot reload in dev: code changes reflect immediately
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # Lets the container reach host MySQL on Linux
+    networks:
+      - restaurant_net
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
+
+networks:
+  restaurant_net:
+    driver: bridge
