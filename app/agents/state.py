@@ -29,7 +29,8 @@ class AgentState(TypedDict):
     order_history: list[dict]
 
     # ── Recommendation Agent ──────────────────────────────────────────────────
-    recommendations: list[dict]
+    recommendations: list[dict]         # Raw Qdrant results (name, score, calories, …)
+    recommendation_text: str | None     # GPT-generated personalised recommendation
 
     # ── Waiter Copilot ────────────────────────────────────────────────────────
     staff_summary: str | None
