@@ -57,14 +57,16 @@ async def customer_id_node(state: AgentState, config: RunnableConfig) -> dict:
     dietary_filters: dict = {}
 
     if pref is not None:
+        raw_goals = pref.health_goals or []
+        health_goals = [g.replace("_", "-") for g in raw_goals]
+
         preferences_dict = {
             "diet_type": pref.diet_type.value,
             "spice_level": pref.spice_level.value,
             "favorite_cuisines": pref.favorite_cuisines or [],
             "allergies": pref.allergies or [],
-            "health_goals": pref.health_goals or [],
+            "health_goals": health_goals,    # already normalised
         }
-        health_goals = pref.health_goals or []
 
         # Pre-build dietary_filters used by the Qdrant retriever in Phase 7
         dietary_filters = {

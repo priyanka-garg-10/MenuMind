@@ -5,15 +5,6 @@ from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
 
-# Health goal strings → Qdrant filter keys.
-# Multiple goals can apply at once; the most restrictive value wins.
-_HEALTH_GOAL_FILTERS: dict[str, dict] = {
-    "weight-loss":  {"max_calories": 400},
-    "low-calorie":  {"max_calories": 350},
-    "high-protein": {"min_protein": 25.0},
-    "fitness":      {"min_protein": 20.0},
-    "muscle-gain":  {"min_protein": 30.0},
-}
 
 def route_after_customer_id(state: AgentState) -> str:
     """
@@ -52,15 +43,11 @@ async def preference_node(state: AgentState) -> dict:
     if cuisines:
         dietary_filters["cuisine"] = cuisines[0]
 
-    # Health goals → calorie / protein Qdrant filters
+    # Health goals stay in state for the Health Agent to use during re-ranking.
+    # They are NOT translated into Qdrant pre-filters here — min_protein / max_calories
+    # are soft preferences, not hard eligibility constraints. Adding them as Qdrant
+    # filters causes zero results for vegetarian users (no veg dish exceeds 25g protein).
     health_goals: list[str] = prefs.get("health_goals", [])
-    for goal in health_goals:
-        mapping = _HEALTH_GOAL_FILTERS.get(goal, {})
-        for key, value in mapping.items():
-            if key == "max_calories":
-                dietary_filters[key] = min(dietary_filters.get(key, 9_999), value)
-            elif key == "min_protein":
-                dietary_filters[key] = max(dietary_filters.get(key, 0.0), value)
 
     logger.info(
         "PreferenceAgent: dietary_filters=%s  health_goals=%s",
