@@ -14,27 +14,29 @@ class AgentState(TypedDict):
    
     phone: str
 
-    # ── Customer ID Agent ─────────────────────────────────────────────────────
+    # ── Customer ID Agent
     user_id: int | None
     user_name: str | None
     is_new_user: bool
     visit_count: int
 
-    # ── Preference / Health data ───────────────────────────────────────────────
+    # ── Preference / Health data
     preferences: dict | None
     health_goals: list[str]
     dietary_filters: dict
 
-    # ── Memory Agent ──────────────────────────────────────────────────────────
+    # ── Memory Agent
     order_history: list[dict]
 
-    # ── Recommendation Agent ──────────────────────────────────────────────────
-    recommendations: list[dict]         # Raw Qdrant results (name, score, calories, …)
-    recommendation_text: str | None     # GPT-generated personalised recommendation
+    # ── Recommendation Agent
+    recommendations: list[dict]
+    recommendation_text: str | None 
 
-    # ── Waiter Copilot ────────────────────────────────────────────────────────
+    # ── Health Agent 
+    health_warnings: list[str]
+
+    # ── Waiter Copilot
     staff_summary: str | None
 
-    # ── Graph meta ────────────────────────────────────────────────────────────
-    current_step: str
+    # ── Graph meta 
     error: str | None

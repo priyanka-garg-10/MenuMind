@@ -1,6 +1,7 @@
 from langgraph.graph import END, START, StateGraph
 
 from app.agents.customer_id_agent import customer_id_node
+from app.agents.health_agent import health_agent_node
 from app.agents.preference_agent import preference_node, route_after_customer_id
 from app.agents.recommendation_agent import recommendation_node
 from app.agents.state import AgentState
@@ -12,7 +13,8 @@ def build_graph():
 
     Phase 5  → customer_id → END
     Phase 6  → customer_id → (conditional) → preference → END
-    Phase 7  → customer_id → (conditional) → preference → recommendation → END
+    Phase 7  → ... → preference → recommendation → END
+    Phase 8  → ... → preference → recommendation → health_agent → END
 
     Control flow
     ------------
@@ -20,10 +22,11 @@ def build_graph():
       └─► customer_id
                │
           is_new_user?
-           YES └─► END          (new visitors skip personalisation)
+           YES └─► END               (new visitors: no prefs to personalise with)
            NO  └─► preference
                        └─► recommendation
-                                 └─► END
+                                 └─► health_agent
+                                           └─► END
     """
     builder = StateGraph(AgentState)
 
@@ -31,16 +34,17 @@ def build_graph():
     builder.add_node("customer_id", customer_id_node)
     builder.add_node("preference", preference_node)
     builder.add_node("recommendation", recommendation_node)
+    builder.add_node("health_agent", health_agent_node)
 
     # ── Define control flow ───────────────────────────────────────────────────
     builder.add_edge(START, "customer_id")
 
-    # Conditional branch: new user → END, returning user → preference
+    # Conditional: new user → END, returning user → preference
     builder.add_conditional_edges("customer_id", route_after_customer_id)
 
-    # Returning users always go through recommendation after preference
     builder.add_edge("preference", "recommendation")
-    builder.add_edge("recommendation", END)
+    builder.add_edge("recommendation", "health_agent")
+    builder.add_edge("health_agent", END)
 
     return builder.compile()
 

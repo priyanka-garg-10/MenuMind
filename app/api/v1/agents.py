@@ -51,6 +51,7 @@ async def identify_customer(
         "order_history": [],
         "recommendations": [],
         "recommendation_text": None,
+        "health_warnings": [],
         "staff_summary": None,
         "current_step": "start",
         "error": None,
