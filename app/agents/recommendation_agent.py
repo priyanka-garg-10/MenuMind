@@ -120,15 +120,36 @@ async def recommendation_node(state: AgentState, config: RunnableConfig) -> dict
         }
 
     # ── Step 3: Generate personalised recommendation via GPT ──────────────────
+    order_history: list[dict] = state.get("order_history") or []
+    visit_count: int = state.get("visit_count") or 0
+
+    # Build order history context so GPT can avoid repetition
+    history_line = ""
+    if order_history:
+        past = ", ".join(
+            f"{o['name']} ({o['ordered_at']})" for o in order_history[:3]
+        )
+        history_line = f"Recent orders: {past}\n"
+
+    visit_line = ""
+    if visit_count > 0:
+        visit_line = (
+            f"This is visit #{visit_count + 1} "
+            f"({'loyal customer' if visit_count >= 3 else 'returning customer'}).\n"
+        )
+
     user_message = (
         f"Customer name: {state.get('user_name') or 'Guest'}\n"
         f"Diet type: {prefs.get('diet_type', 'no preference')}\n"
         f"Spice preference: {prefs.get('spice_level', 'medium')}\n"
         f"Health goals: {', '.join(health_goals) if health_goals else 'none'}\n"
-        f"Allergies: {', '.join(prefs.get('allergies', [])) or 'none'}\n\n"
-        f"Available dishes (ranked by relevance):\n"
+        f"Allergies: {', '.join(prefs.get('allergies', [])) or 'none'}\n"
+        f"{history_line}"
+        f"{visit_line}"
+        f"\nAvailable dishes (ranked by relevance):\n"
         f"{_format_items_for_prompt(retrieved_items)}\n\n"
-        f"Recommend the 3 best dishes for this customer and explain why each suits them."
+        f"Recommend the 3 best dishes for this customer and explain why each suits them. "
+        f"{'If they have recent orders, prefer dishes they have not tried recently.' if order_history else ''}"
     )
 
     client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
