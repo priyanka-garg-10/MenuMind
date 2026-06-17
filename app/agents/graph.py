@@ -6,22 +6,35 @@ from app.agents.memory_agent import memory_agent_node
 from app.agents.preference_agent import preference_node, route_after_customer_id
 from app.agents.recommendation_agent import recommendation_node
 from app.agents.state import AgentState
+from app.agents.waiter_copilot import waiter_copilot_node
 
 
 def build_graph():
     """
-    Control flow
-    ------------
+    Compile the complete Restaurant AI LangGraph.
+
+    Full pipeline (Phase 10)
+    ------------------------
     START
       └─► customer_id
                │
           is_new_user?
            YES └─► END
            NO  └─► preference
-                       └─► memory_agent        ← Phase 9
+                       └─► memory_agent
                                  └─► recommendation
                                            └─► health_agent
-                                                     └─► END
+                                                     └─► waiter_copilot
+                                                               └─► END
+
+    Agent responsibilities
+    ----------------------
+    customer_id    : who is this customer? (MySQL lookup)
+    preference     : translate prefs → Qdrant dietary_filters
+    memory_agent   : load order history + visit count (MySQL)
+    recommendation : RAG — Qdrant retrieval + GPT generation
+    health_agent   : nutritional re-ranking + allergy conflict detection
+    waiter_copilot : synthesise all state → staff briefing (GPT)
     """
     builder = StateGraph(AgentState)
 
@@ -31,17 +44,19 @@ def build_graph():
     builder.add_node("memory_agent", memory_agent_node)
     builder.add_node("recommendation", recommendation_node)
     builder.add_node("health_agent", health_agent_node)
+    builder.add_node("waiter_copilot", waiter_copilot_node)
 
     # ── Define control flow ───────────────────────────────────────────────────
     builder.add_edge(START, "customer_id")
 
-    # Conditional: new user → END, returning user → preference
+    # New visitors skip the full pipeline — nothing to personalise yet
     builder.add_conditional_edges("customer_id", route_after_customer_id)
 
     builder.add_edge("preference", "memory_agent")
     builder.add_edge("memory_agent", "recommendation")
     builder.add_edge("recommendation", "health_agent")
-    builder.add_edge("health_agent", END)
+    builder.add_edge("health_agent", "waiter_copilot")
+    builder.add_edge("waiter_copilot", END)
 
     return builder.compile()
 
