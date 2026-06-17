@@ -76,11 +76,6 @@ async def recommendation_node(state: AgentState, config: RunnableConfig) -> dict
     R — Retrieve: semantic search on Qdrant with dietary_filters
     A — Augment:  format retrieved items as prompt context
     G — Generate: GPT produces a personalised recommendation
-
-    Dependencies injected via RunnableConfig
-    ----------------------------------------
-    qdrant: AsyncQdrantClient — passed from the FastAPI route via
-            config={"configurable": {"qdrant": qdrant_client}}
     """
     qdrant: AsyncQdrantClient = config["configurable"]["qdrant"]
 
@@ -88,13 +83,13 @@ async def recommendation_node(state: AgentState, config: RunnableConfig) -> dict
     dietary_filters: dict = state.get("dietary_filters", {})
     health_goals: list[str] = state.get("health_goals", [])
 
-    # ── Step 1: Build search query ─────────────────────────────────────────────
+    # Step 1: Build search query
     query = _build_search_query(state)
     logger.info(
         "RecommendationAgent: query=%r  filters=%s", query, dietary_filters
     )
 
-    # ── Step 2: Retrieve from Qdrant ───────────────────────────────────────────
+    # Step 2: Retrieve from Qdrant
     embedder = Embedder()
     retriever = MenuRetriever(qdrant, embedder)
 
@@ -119,7 +114,7 @@ async def recommendation_node(state: AgentState, config: RunnableConfig) -> dict
             "current_step": "recommendation_done",
         }
 
-    # ── Step 3: Generate personalised recommendation via GPT ──────────────────
+    # Step 3: Generate personalised recommendation via GPT
     order_history: list[dict] = state.get("order_history") or []
     visit_count: int = state.get("visit_count") or 0
 

@@ -30,7 +30,7 @@ logger = get_logger(__name__)
 # Menu data — realistic Indian restaurant with full nutritional profiles
 # ---------------------------------------------------------------------------
 MENU: list[dict] = [
-    # ── Starters ─────────────────────────────────────────────────────────────
+    
     {
         "name": "Samosa (2 pcs)",
         "description": "Crispy pastry filled with spiced potato and green peas, served with mint chutney",
@@ -106,7 +106,7 @@ MENU: list[dict] = [
         "ingredients": ["red lentil", "turmeric", "ginger", "garlic", "tomato"],
         "tags": ["light", "healthy", "low-calorie", "soup", "weight-loss"],
     },
-    # ── Main Course — Vegetarian ───────────────────────────────────────────────
+  
     {
         "name": "Dal Makhani",
         "description": "Slow-cooked black lentils in a rich buttery tomato sauce, simmered overnight",
@@ -167,7 +167,7 @@ MENU: list[dict] = [
         "ingredients": ["basmati rice", "mixed vegetables", "onion", "saffron", "mint", "whole spices"],
         "tags": ["rice", "festive", "aromatic", "filling"],
     },
-    # ── Main Course — Non-Vegetarian ──────────────────────────────────────────
+    
     {
         "name": "Butter Chicken",
         "description": "Tender chicken in a silky, mildly spiced tomato and butter sauce",
@@ -228,7 +228,7 @@ MENU: list[dict] = [
         "ingredients": ["lamb", "Kashmiri chili", "yogurt", "fennel", "dried ginger", "cardamom"],
         "tags": ["slow-cooked", "high-protein", "Kashmiri", "bold-flavor", "premium"],
     },
-    # ── Breads ───────────────────────────────────────────────────────────────
+   
     {
         "name": "Garlic Naan",
         "description": "Soft leavened bread topped with garlic and butter, baked in tandoor",
@@ -244,7 +244,7 @@ MENU: list[dict] = [
         "ingredients": ["flour", "garlic", "butter", "yeast", "milk"],
         "tags": ["bread", "tandoor", "accompaniment", "popular"],
     },
-    # ── Desserts ──────────────────────────────────────────────────────────────
+    
     {
         "name": "Gulab Jamun",
         "description": "Soft milk-solid dumplings soaked in rose-flavoured sugar syrup",
@@ -275,7 +275,7 @@ MENU: list[dict] = [
         "ingredients": ["condensed milk", "mango pulp", "cardamom", "pistachio"],
         "tags": ["frozen", "mango", "refreshing", "summer", "lower-calorie-dessert"],
     },
-    # ── Beverages ─────────────────────────────────────────────────────────────
+   
     {
         "name": "Masala Chai",
         "description": "Spiced Indian tea brewed with ginger, cardamom and cinnamon",

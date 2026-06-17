@@ -26,19 +26,10 @@ def build_graph():
                                            └─► health_agent
                                                      └─► waiter_copilot
                                                                └─► END
-
-    Agent responsibilities
-    ----------------------
-    customer_id    : who is this customer? (MySQL lookup)
-    preference     : translate prefs → Qdrant dietary_filters
-    memory_agent   : load order history + visit count (MySQL)
-    recommendation : RAG — Qdrant retrieval + GPT generation
-    health_agent   : nutritional re-ranking + allergy conflict detection
-    waiter_copilot : synthesise all state → staff briefing (GPT)
     """
     builder = StateGraph(AgentState)
 
-    # ── Register nodes ────────────────────────────────────────────────────────
+    # Register nodes 
     builder.add_node("customer_id", customer_id_node)
     builder.add_node("preference", preference_node)
     builder.add_node("memory_agent", memory_agent_node)
@@ -46,7 +37,7 @@ def build_graph():
     builder.add_node("health_agent", health_agent_node)
     builder.add_node("waiter_copilot", waiter_copilot_node)
 
-    # ── Define control flow ───────────────────────────────────────────────────
+    # Define control flow
     builder.add_edge(START, "customer_id")
 
     # New visitors skip the full pipeline — nothing to personalise yet
@@ -61,5 +52,4 @@ def build_graph():
     return builder.compile()
 
 
-# Singleton — compiled once when this module is first imported.
 restaurant_graph = build_graph()

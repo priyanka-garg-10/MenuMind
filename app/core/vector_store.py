@@ -39,9 +39,9 @@ async def init_qdrant() -> None:
     _client = AsyncQdrantClient(
         host=settings.QDRANT_HOST,
         port=settings.QDRANT_PORT,
-        https=settings.QDRANT_HTTPS,          # explicit — never left to inference
+        https=settings.QDRANT_HTTPS,
         api_key=settings.QDRANT_API_KEY or None,
-        check_compatibility=False,            # suppresses client/server version mismatch warning
+        check_compatibility=False,
     )
 
     response = await _client.get_collections()

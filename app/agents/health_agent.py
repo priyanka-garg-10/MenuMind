@@ -62,7 +62,7 @@ async def health_agent_node(state: AgentState) -> dict:
     """
     Health-Aware Agent — post-retrieval nutritional re-ranking.
 
-    Reads the `recommendations` list that Phase 7 retrieved from Qdrant
+    Reads the `recommendations` list retrieved from Qdrant
     and applies two layers of health logic:
 
     1. Scoring  — computes health_score per item (pure math, no LLM)

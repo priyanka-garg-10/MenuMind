@@ -40,13 +40,6 @@ async def waiter_copilot_node(state: AgentState) -> dict:
 
     No DB or Qdrant access needed — every field required is already in state,
     populated by the 5 preceding agents.
-
-    Why a second LLM call?
-    ----------------------
-    Phase 7's recommendation_text is customer-facing: warm, explanatory, personal.
-    The staff_summary is staff-facing: terse, alert-driven, action-oriented.
-    Same data, different prompt persona — different output entirely.
-    The waiter needs to absorb this in 10 seconds, not read a paragraph.
     """
     prefs: dict = state.get("preferences") or {}
     recommendations: list[dict] = state.get("recommendations") or []
@@ -55,7 +48,7 @@ async def waiter_copilot_node(state: AgentState) -> dict:
     visit_count: int = state.get("visit_count") or 0
     user_name: str = state.get("user_name") or "Guest"
 
-    # ── Build context for prompt ───────────────────────────────────────────────
+    # Build context for prompt 
     visit_label = (
         "first-time visitor" if visit_count == 0
         else f"returning — visit #{visit_count + 1}"
@@ -98,7 +91,7 @@ async def waiter_copilot_node(state: AgentState) -> dict:
             {"role": "system", "content": _SYSTEM_PROMPT},
             {"role": "user", "content": user_message},
         ],
-        temperature=0.4,     # lower than Phase 7 — briefings need consistency, not creativity
+        temperature=0.4,
         max_tokens=200,
     )
 

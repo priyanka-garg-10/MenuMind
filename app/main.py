@@ -16,7 +16,7 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # ── Startup ──────────────────────────────────────────────────────────────
+    # Startup 
     setup_logging()
     logger = get_logger(__name__)
     logger.info("Starting %s v%s", settings.APP_NAME, settings.APP_VERSION)
@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    # ── Shutdown ─────────────────────────────────────────────────────────────
+    #Shutdown 
     logger.info("Shutting down %s", settings.APP_NAME)
     await close_qdrant()
 

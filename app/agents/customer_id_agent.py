@@ -68,7 +68,7 @@ async def customer_id_node(state: AgentState, config: RunnableConfig) -> dict:
             "health_goals": health_goals,    # already normalised
         }
 
-        # Pre-build dietary_filters used by the Qdrant retriever in Phase 7
+        # Pre-build dietary_filters used by the Qdrant retriever
         dietary_filters = {
             "is_veg": pref.diet_type.value in ("veg", "vegan", "jain"),
         }

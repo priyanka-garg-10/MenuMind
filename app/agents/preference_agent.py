@@ -44,9 +44,6 @@ async def preference_node(state: AgentState) -> dict:
         dietary_filters["cuisine"] = cuisines[0]
 
     # Health goals stay in state for the Health Agent to use during re-ranking.
-    # They are NOT translated into Qdrant pre-filters here — min_protein / max_calories
-    # are soft preferences, not hard eligibility constraints. Adding them as Qdrant
-    # filters causes zero results for vegetarian users (no veg dish exceeds 25g protein).
     health_goals: list[str] = prefs.get("health_goals", [])
 
     logger.info(

@@ -23,21 +23,6 @@ async def identify_customer(
 ):
     """
     Run the full Restaurant AI agent pipeline for a given phone number.
-
-    Phase 5  – Customer ID node identifies the caller.
-    Phase 6  – Preference node enriches dietary filters (returning users only).
-    Phase 7  – Recommendation node runs RAG and generates a GPT recommendation.
-
-    New visitor response
-    --------------------
-    is_new_user: true, recommendations: [], recommendation_text: null
-    current_step: "customer_identified"
-
-    Returning user response
-    -----------------------
-    is_new_user: false, recommendations: [list of top menu items]
-    recommendation_text: "Here are 3 dishes I recommend for you…"
-    current_step: "recommendation_done"
     """
     initial_state: AgentState = {
         "phone": payload.phone,
