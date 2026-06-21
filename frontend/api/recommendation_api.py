@@ -30,7 +30,10 @@ def run_agent_pipeline(token: str, phone: str) -> tuple[dict, int]:
             headers={"Authorization": f"Bearer {token}"},
             timeout=30,   # generous timeout for two GPT calls + Qdrant search
         )
-        return resp.json(), resp.status_code
+        try:
+            return resp.json(), resp.status_code
+        except Exception:
+            return {"detail": f"Server error ({resp.status_code}) — Qdrant may be unavailable."}, resp.status_code
     except requests.exceptions.ConnectionError:
         return {"detail": "Cannot reach the backend."}, 503
     except requests.exceptions.Timeout:

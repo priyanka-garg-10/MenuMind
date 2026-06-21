@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from qdrant_client import AsyncQdrantClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -66,4 +66,10 @@ async def search_menu(
       - "light vegetarian starter under 200 calories"
       - "spicy Indian curry"
     """
-    return await svc.search(payload)
+    try:
+        return await svc.search(payload)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Search unavailable — Qdrant may be unreachable: {exc}",
+        )

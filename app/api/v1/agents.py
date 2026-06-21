@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from qdrant_client import AsyncQdrantClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -42,9 +42,14 @@ async def identify_customer(
         "error": None,
     }
 
-    result: AgentState = await restaurant_graph.ainvoke(
-        initial_state,
-        config={"configurable": {"db": db, "qdrant": qdrant}},
-    )
-
-    return result
+    try:
+        result: AgentState = await restaurant_graph.ainvoke(
+            initial_state,
+            config={"configurable": {"db": db, "qdrant": qdrant}},
+        )
+        return result
+    except Exception as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Agent pipeline failed — Qdrant may be unavailable: {exc}",
+        )

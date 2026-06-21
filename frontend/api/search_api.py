@@ -38,7 +38,10 @@ def semantic_search(
             headers={"Authorization": f"Bearer {token}"},
             timeout=15,   # embedding + vector search can take a moment
         )
-        data = resp.json()
+        try:
+            data = resp.json()
+        except Exception:
+            return [], resp.status_code
         return (data if isinstance(data, list) else []), resp.status_code
     except requests.exceptions.ConnectionError:
         return [], 503
