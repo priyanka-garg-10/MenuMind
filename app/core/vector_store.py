@@ -36,13 +36,23 @@ async def init_qdrant() -> None:
     """
     global _client
 
-    _client = AsyncQdrantClient(
-        host=settings.QDRANT_HOST,
-        port=settings.QDRANT_PORT,
-        https=settings.QDRANT_HTTPS,
-        api_key=settings.QDRANT_API_KEY or None,
-        check_compatibility=False,
-    )
+    # Qdrant Cloud gives a full URL (https://xxxx.cloud.qdrant.io:6333).
+    # The host= + port= form only works for bare hostnames like "localhost".
+    # If QDRANT_HOST already starts with http, pass it as url= instead.
+    if settings.QDRANT_HOST.startswith("http"):
+        _client = AsyncQdrantClient(
+            url=settings.QDRANT_HOST,
+            api_key=settings.QDRANT_API_KEY or None,
+            check_compatibility=False,
+        )
+    else:
+        _client = AsyncQdrantClient(
+            host=settings.QDRANT_HOST,
+            port=settings.QDRANT_PORT,
+            https=settings.QDRANT_HTTPS,
+            api_key=settings.QDRANT_API_KEY or None,
+            check_compatibility=False,
+        )
 
     response = await _client.get_collections()
     existing = {c.name for c in response.collections}
