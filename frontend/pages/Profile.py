@@ -72,7 +72,7 @@ if pref_status == 200:
     st.session_state["preferences"] = pref_data
 
 profile = profile_data if p_status == 200 else {}
-prefs   = pref_data   if pref_status == 200 else {}
+prefs   = pref_data   if (pref_status == 200 and pref_data) else {}
 name    = profile.get("name") or "Guest"
 phone   = profile.get("phone", "")
 
